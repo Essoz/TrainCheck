@@ -31,6 +31,10 @@ Under the hood, TrainCheck decomposes into three CLI tools:
 
 TrainCheck is under active development. Features may be incomplete and the documentation is evolving—if you give it a try, please join our 💬 [Discord server](https://discord.gg/VwxpJDvB) or file a GitHub issue for support. Currently, the **Checker** operates in a semi‑online mode: you invoke it against the live, growing trace output to catch silent bugs as they appear. Fully automatic monitoring is on the roadmap, and we welcome feedback and contributions from early adopters.
 
+## Demo
+
+A short demo video (coming soon) will showcase TrainCheck’s workflow from instrumentation to detecting an issue. We will also provide concise GIFs illustrating each CLI tool.
+
 ## Try TrainCheck
 
 1. **Install**  
@@ -45,10 +49,18 @@ TrainCheck is under active development. Features may be incomplete and the docum
 ## Documentation
 
 Please visit [TrainCheck Technical Doc](./docs/technical-doc.md).
+For common usage scenarios and current limitations, see the
+[Usage Guide](./docs/usage-guide.md).
+The project direction and planned features are outlined in our
+[ROADMAP](./ROADMAP.md).
 
 ## Contributing
 
 We welcome and value any contributions and collaborations. Please check out [Contributing to TrainCheck](./CONTRIBUTING.md) for how to get involved.
+
+## License
+
+TrainCheck is licensed under the [Apache License 2.0](./LICENSE).
 
 ## Citation
 
