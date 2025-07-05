@@ -1,41 +1,40 @@
-# TrainCheck Usage Guide
+# 🧪 TrainCheck: Usage Guide
 
-TrainCheck monitors deep‑learning training runs for “silent” correctness issues. This document explains common ways to apply TrainCheck and clarifies its current limitations.
+TrainCheck helps detect and diagnose silent errors in deep learning training runs—issues that don't crash your code but silently break correctness.
 
-## Typical Scenarios
+## 🚀 Quick Start
 
-- **Sanity checking new pipelines.** When bringing up a new model or porting code between frameworks, use TrainCheck to confirm that basic API interactions follow expected patterns.
-- **Regression testing.** After modifying training code or upgrading dependencies, run TrainCheck on a short reference run to ensure key behaviors (gradient updates, optimizer steps, etc.) remain intact.
-- **Monitoring long experiments.** Use the semi‑online checker to spot issues early in multi‑hour or multi‑day jobs. TrainCheck can alert you soon after a silent failure occurs, instead of waiting for final metrics to degrade.
-- **Debugging unusual behavior.** If training diverges or performs suspiciously, collect a trace and compare it against invariants inferred from a known-good run to narrow down where behavior deviates.
+Check out the [5-minute guide](./docs/5-min.md) for a minimal working example.
 
-## What TrainCheck Does Well
+## ✅ Common Use Cases
 
-- Detects **missing or reordered API calls** that break common training assumptions.
-- Verifies **parameter updates** and other state changes that should occur inside optimizer steps.
-- Works with standard PyTorch scripts without requiring code modifications.
+TrainCheck is useful when your training process doesn’t converge, behaves inconsistently, or silently fails. It can help you:
 
-## Current Limitations
+- **Monitor** long-running training jobs and catch issues early
+- **Debug** finished runs and pinpoint where things went wrong
+- **Sanity-check** new pipelines, code changes, or infrastructure upgrades
 
-- **Framework support.** TrainCheck primarily targets PyTorch. Other frameworks or highly customized backends may require additional instrumentation work.
-- **Online monitoring.** Real-time checking is in development. Today you need to periodically run the checker on the growing trace output.
-- **Semantic bugs.** TrainCheck focuses on low-level behavioral invariants. Issues that only manifest in final accuracy or require understanding of model semantics may not be caught.
-- **Large-scale traces.** Very long or distributed runs can generate huge traces, which may slow inference or checking. Short representative runs usually suffice for inference.
+TrainCheck detects a range of correctness issues—like misused APIs, incorrect training logic, or hardware faults—without requiring labels or modifications to your training code.
 
-## Potential Pitfalls
+**While TrainCheck focuses on correctness, it’s also useful for *ruling out bugs* so you can focus on algorithm design with confidence.**
 
-- **Overfitting invariants.** Invariants inferred from a single narrow run may fire on benign differences. Consider collecting traces from several healthy runs to generalize better.
-- **Instrumentation overhead.** Trace collection adds runtime overhead. Start with short exploratory runs to verify that the instrumentation does not alter training dynamics.
-- **Unsupported APIs.** Rarely used or third-party APIs may not be instrumented by default, leading to missed events.
+## 🧠 Tips for Effective Use
 
-## Choosing Reference Runs
+1. **Use short runs to reduce overhead.**  
+   If your hardware is stable, you can validate just the beginning of training. Use smaller models and fewer iterations to speed up turnaround time.
 
-Good invariants come from good reference runs. Start with short, known‑good scripts—official examples or your own healthy training jobs. Collect traces from a few such runs to capture normal variation and avoid overfitting. If your workflow changes significantly (e.g., new optimizer or distributed backend), regenerate invariants from a fresh reference run.
+2. **Choose good reference runs for inference.**  
+   - If you have a past run of the same code that worked well, just use that.
+   - You can also use small-scale example pipelines that cover different features of the framework (e.g., various optimizers, mixed precision, optional flags).
+   - If you're debugging a new or niche feature with limited history, try using the official example as a reference. Even if the example is not bug-free, invariant violations can still highlight behavioral differences between your run and the example, helping you debug faster.
 
-## Diagnosing Violations
+3. **Minimize scale when collecting traces.**  
+   - Shrink the pipeline by using a smaller model, running for only ~10 iterations, and using the minimal necessary compute setup (e.g., 2 nodes for distributed training).
 
-When TrainCheck reports a violation, inspect the accompanying log snippet and trace location. Compare the failing run against your reference trace to understand what deviated. Often the problematic API call or missing state update will pinpoint the root cause. The [technical documentation](./technical-doc.md) explains how to examine traces in more detail.
 
-## Summary
+## 🚧 Current Limitations
 
-TrainCheck shines when used as an additional safety net during development and testing of PyTorch training pipelines. It can reveal silent issues early, but it does not replace traditional testing or model evaluation. Keep its limitations in mind, and feel free to suggest improvements or contribute support for new frameworks!
+- **Eager mode only.** TrainCheck instrumentor currently works only in PyTorch eager mode. Features like `torch.compile` are disabled during instrumentation.
+
+- **Not fully real-time (yet).** Invariant checking is semi-online. Full real-time support is planned but not yet available.
+
